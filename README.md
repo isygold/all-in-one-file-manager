@@ -32,6 +32,24 @@ Listen on all interfaces (same Wi-Fi):
 python3 filemanager.py --host 0.0.0.0 --port 8080
 ```
 
+## Install as app
+
+Two ways — pick whichever suits you:
+
+**Option A — install from browser (fastest, no build).**
+The web UI is a PWA. Run the server, open the URL in Chrome,
+then *Menu → Add to Home screen / Install app*. It launches
+fullscreen with its own icon.
+
+**Option B — real APK (standalone, no Termux needed).**
+Every push to `main` builds a debug APK with the Python backend
+embedded (Chaquopy + WebView) via GitHub Actions:
+
+1. Open the repo on GitHub → **Actions** → latest **Build APK** run.
+2. Download the **fmx-debug-apk** artifact, install it on your phone.
+3. Grant **All files access** when asked — the app serves the same
+   FMX UI from `http://127.0.0.1:8080` internally.
+
 ## Run (Linux / PC)
 
 ```bash

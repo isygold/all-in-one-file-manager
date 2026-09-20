@@ -315,6 +315,25 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
                 return
+            if route == "/manifest.webmanifest":
+                return self._json(PWA_MANIFEST)
+            if route == "/sw.js":
+                body = SW_JS.encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/javascript")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            if route in ("/icon-192.png", "/icon-512.png"):
+                size = 192 if "192" in route else 512
+                body = _solid_png(size)
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
             if route == "/api/roots":
                 roots = []
                 cands = [HOME,
@@ -466,12 +485,75 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 
 
+# ---------------------------------------------------------------- PWA (installable app)
+PWA_MANIFEST = {
+    "name": "FMX File Manager",
+    "short_name": "FMX",
+    "description": "All-in-one file manager (MT + ZArchiver style)",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#0f172a",
+    "theme_color": "#0f172a",
+    "icons": [
+        {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
+        {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    ],
+}
+
+SW_JS = """self.addEventListener('install',e=>{self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(clients.claim())});
+self.addEventListener('fetch',e=>{
+  const u=new URL(e.request.url);
+  if(u.pathname.startsWith('/api/')) return; // never cache API
+  if(e.request.method!=='GET') return;
+  e.respondWith(caches.open('fmx-v1').then(async c=>{
+    try{const r=await fetch(e.request);c.put(e.request,r.clone());return r}
+    catch(err){const hit=await c.match(e.request);return hit||Response.error()}
+  }));
+});
+"""
+
+
+def _solid_png(size=192, rgb=(56, 189, 248)):
+    """Minimal solid PNG (stdlib only) for app icons. Dark bg + lighter center."""
+    import struct
+    import zlib
+    bg = (15, 23, 42)
+    px = bytearray()
+    for y in range(size):
+        px.append(0)  # filter byte
+        for x in range(size):
+            # rounded-ish lighter square in the middle (fake "F" block look)
+            m = size // 4
+            if m < x < size - m and m < y < size - m:
+                r, g, b = rgb
+            else:
+                r, g, b = bg
+            px += bytes((r, g, b))
+    raw = bytes(px)
+    def chunk(t, d):
+        c = t + d
+        return struct.pack(">I", len(d)) + c + struct.pack(">I", zlib.crc32(c) & 0xFFFFFFFF)
+    ihdr = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr)
+            + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b""))
+
+
 # ---------------------------------------------------------------- Web UI (mobile-first, single file)
 HTML_PAGE = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <title>FMX - All-in-One File Manager</title>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--line:#334155;--tx:#e2e8f0;--mut:#94a3b8;--ac:#38bdf8;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
@@ -656,9 +738,26 @@ $('q').addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const v=e.
 try{const j=await api('/api/search?base='+encodeURIComponent(cur().path)+'&q='+encodeURIComponent(v));
 openModal('Search: '+v,j.results.slice(0,200).map(r=>`<div><small><a href="#" onclick="nav('${esc(r.path.substring(0,r.path.lastIndexOf('/'))||'/')}');closeModal();return false">${esc(r.name)}</a> - ${esc(r.path)}</small></div>`).join('')||'no results',[['Close',closeModal]])}catch(err){toast(err.message)}});
 init();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body></html>
 """
+
+
+def run(host="127.0.0.1", port=8080, quiet=False):
+    """Start server (also used embedded from Android/Chaquopy)."""
+    mimetypes.init()
+    srv = ThreadingHTTPServer((host, port), Handler)
+    if not quiet:
+        print(f"{APP_NAME} v{VERSION}")
+        print(f"Serving HOME={HOME}")
+        print(f"Open: http://{host}:{port}")
+        print("Press Ctrl+C to stop.")
+    try:
+        srv.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    return srv
 
 
 def main():
@@ -666,16 +765,7 @@ def main():
     ap.add_argument("--port", type=int, default=8080)
     ap.add_argument("--host", default="127.0.0.1")
     args = ap.parse_args()
-    mimetypes.init()
-    srv = ThreadingHTTPServer((args.host, args.port), Handler)
-    print(f"{APP_NAME} v{VERSION}")
-    print(f"Serving HOME={HOME}")
-    print(f"Open: http://{args.host}:{args.port}")
-    print("Press Ctrl+C to stop.")
-    try:
-        srv.serve_forever()
-    except KeyboardInterrupt:
-        pass
+    run(args.host, args.port)
 
 
 if __name__ == "__main__":

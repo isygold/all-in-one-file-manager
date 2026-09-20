@@ -5,3 +5,8 @@ __pycache__/
 venv/
 *.log
 .DS_Store
+# android wrapper (local build outputs + build-time copy of backend)
+android/.gradle/
+android/app/build/
+android/local.properties
+android/app/src/main/python/filemanager.py
