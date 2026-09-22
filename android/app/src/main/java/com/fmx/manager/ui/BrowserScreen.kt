@@ -356,7 +356,7 @@ fun BrowserScreen(
                         modifier = Modifier.padding(end = 4.dp),
                     ) {
                         Row(
-                            Modifier.combinedClickable({ vm.switchTab(i) })
+                            Modifier.combinedClickable(onClick = { vm.switchTab(i) })
                                 .padding(start = 10.dp, top = 6.dp, bottom = 6.dp, end = 2.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -369,7 +369,7 @@ fun BrowserScreen(
                                 Text(
                                     "  ✕ ",
                                     style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.combinedClickable({ vm.closeTab(i) })
+                                    modifier = Modifier.combinedClickable(onClick = { vm.closeTab(i) })
                                         .padding(2.dp),
                                 )
                             } else {
