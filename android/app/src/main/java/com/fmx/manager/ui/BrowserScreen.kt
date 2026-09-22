@@ -487,7 +487,7 @@ fun BrowserScreen(
                 ui.entries.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
                     Text("Empty folder", color = MaterialTheme.colorScheme.outline)
                 }
-                else if (!ui.grid) LazyColumn(Modifier.fillMaxSize()) {
+                !ui.grid -> LazyColumn(Modifier.fillMaxSize()) {
                     items(ui.entries, key = { it.file.absolutePath }) { item ->
                         val sel = ui.selection.contains(item.file.absolutePath)
                         ListItem(

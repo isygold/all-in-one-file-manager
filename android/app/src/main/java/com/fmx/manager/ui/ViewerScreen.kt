@@ -382,7 +382,7 @@ fun FileInfoCard(file: File, extra: String?, onEdit: (() -> Unit)?, onHex: (() -
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(12.dp)) {
                 InfoLine("Size", humanSize(file.length()))
-                InfoLine("Modified", fmtDate(file.lastModified))
+                InfoLine("Modified", fmtDate(file.lastModified()))
                 InfoLine("Permissions", mode)
                 InfoLine("Path", file.absolutePath)
                 extra?.let { InfoLine("Note", it) }

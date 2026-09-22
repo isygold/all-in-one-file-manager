@@ -158,15 +158,14 @@ fun AppsScreen(onOpenDrawer: () -> Unit, onApkFile: (File) -> Unit) {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )
-                                try {
+                                val sizeText = try {
                                     val sz = File(a.sourceDir).length()
-                                    if (sz > 0) {
-                                        Text(
-                                            humanSize(sz),
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    }
+                                    if (sz > 0) humanSize(sz) else null
                                 } catch (_: Exception) {
+                                    null
+                                }
+                                sizeText?.let {
+                                    Text(it, style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                         }
