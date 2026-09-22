@@ -1,9 +1,42 @@
 # FMX — All-in-One File Manager
 
-Single-file, stdlib-only, mobile-friendly file manager in Python.
-MT Manager + ZArchiver inspired. Runs in Termux, Linux, anywhere with Python 3.8+.
+Native Android app (Kotlin + Jetpack Compose, Material 3) **plus** a
+single-file Python web companion. No ads, no accounts.
 
-No dependencies. No build step. One file: `filemanager.py`.
+Functionality merged from four great managers:
+
+| From | What FMX takes from it |
+|---|---|
+| **ZArchiver** | ZIP / TAR / 7z browse + extract, password (AES) ZIPs, split/merge parts, single-entry extract, app backup |
+| **MT Manager** | Dual-pane browsing, APK viewer (package, version, permissions, DEX), hex viewer **+ byte editor**, batch rename, text editor with find/replace |
+| **MiXplorer** | Unlimited tabs, dual panels, recycle-bin Trash, app manager (backup/uninstall), Wi-Fi share server, storage analyzer + Home dashboard, grid/list views, AES file vault, checksum compare, font viewer, content search |
+| **Material Files** | Clean Material 3 UI (incl. true-black + dynamic colors), breadcrumbs, Linux-aware details (symlinks, permissions), copy-path, drawer navigation |
+
+## Android app (native)
+
+```
+android/            # Kotlin + Compose, Material 3, minSdk 26
+```
+
+Every push to `main` builds a debug APK via GitHub Actions:
+
+1. Repo on GitHub → **Actions** → latest **Build APK** run.
+2. Download **fmx-debug-apk**, install, grant **All files access**.
+
+Screens: **Files** (tabs, dual-pane, multi-select, bottom sheets) ·
+**Home** (storage + category dashboard) · **Apps** (backup/uninstall/inspect) ·
+**Trash** (30-day recycle bin) · **Tools** (Wi-Fi share, storage analyzer) ·
+viewers (image/video/audio/PDF/font/text/hex) · editors · archive + APK tools.
+
+## Python web companion
+
+`filemanager.py` is the original stdlib-only server version (Termux/PC),
+also PWA-installable from the browser:
+
+```bash
+python3 filemanager.py --port 8080
+# open http://127.0.0.1:8080
+```
 
 ## Features
 
@@ -34,21 +67,11 @@ python3 filemanager.py --host 0.0.0.0 --port 8080
 
 ## Install as app
 
-Two ways — pick whichever suits you:
+**Native APK (recommended).** Actions → latest **Build APK** →
+**fmx-debug-apk** → install → grant **All files access**.
 
-**Option A — install from browser (fastest, no build).**
-The web UI is a PWA. Run the server, open the URL in Chrome,
-then *Menu → Add to Home screen / Install app*. It launches
-fullscreen with its own icon.
-
-**Option B — real APK (standalone, no Termux needed).**
-Every push to `main` builds a debug APK with the Python backend
-embedded (Chaquopy + WebView) via GitHub Actions:
-
-1. Open the repo on GitHub → **Actions** → latest **Build APK** run.
-2. Download the **fmx-debug-apk** artifact, install it on your phone.
-3. Grant **All files access** when asked — the app serves the same
-   FMX UI from `http://127.0.0.1:8080` internally.
+**Browser PWA (no build).** Run the Python server, open the URL in
+Chrome → *Menu → Add to Home screen / Install app*.
 
 ## Run (Linux / PC)
 
@@ -65,7 +88,8 @@ JSON API under `/api/*`:
 ## Project layout
 
 ```
-filemanager.py  # the whole app (backend + embedded web UI)
+android/          # native Kotlin app (Compose/Material3)
+filemanager.py    # Python web companion (stdlib only, PWA)
 README.md
 requirements.txt  # empty — stdlib only
 LICENSE

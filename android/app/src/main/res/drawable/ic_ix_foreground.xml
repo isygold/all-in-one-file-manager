@@ -1,0 +1,42 @@
+<!-- FMX "IX" mark: an I with crown-dot + side tick, an X with node slash. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- I stem -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:pathData="M34,36 L34,72" />
+    <!-- crown dot above the I -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="9"
+        android:strokeLineCap="round"
+        android:pathData="M34,26 L34,27" />
+    <!-- side tick on the I -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M39,54 L48,54" />
+    <!-- X strokes -->
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:pathData="M60,38 L84,70" />
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:pathData="M84,38 L60,70" />
+    <!-- node slash across the X -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M68,58 L76,50" />
+</vector>
