@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -53,8 +54,16 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolsScreen(onOpenDrawer: () -> Unit, onBrowse: (File) -> Unit) {
-    var tool by remember { mutableStateOf<String?>(null) }
+fun ToolsScreen(
+    onOpenDrawer: () -> Unit,
+    onBrowse: (File) -> Unit,
+    initialTool: String? = null,
+    initialToolNonce: Int = 0,
+) {
+    var tool by remember { mutableStateOf<String?>(initialTool) }
+    LaunchedEffect(initialTool, initialToolNonce) {
+        if (initialTool != null) tool = initialTool
+    }
     when (tool) {
         "share" -> ShareTool(onBack = { tool = null })
         "analyze" -> AnalyzeTool(onBack = { tool = null }, onBrowse = onBrowse)

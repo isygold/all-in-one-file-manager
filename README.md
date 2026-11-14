@@ -28,6 +28,13 @@ Screens: **Files** (tabs, dual-pane, multi-select, bottom sheets) ·
 **Trash** (30-day recycle bin) · **Tools** (Wi-Fi share, storage analyzer) ·
 viewers (image/video/audio/PDF/font/text/hex) · editors · archive + APK tools.
 
+The interface mirrors **Astryx** design tokens (surface hierarchy, 14 px
+type scale, 4 px spacing, 8/12/28 dp radii) on top of **Material 3**: a
+MiXplorer-style drawer for storage, locations and tools; a Material
+Files-style breadcrumb header with folder/file counts; and
+ZArchiver-style rows with coloured folder glyphs, item counts and
+per-row actions.
+
 ## Python web companion
 
 `filemanager.py` is the original stdlib-only server version (Termux/PC),

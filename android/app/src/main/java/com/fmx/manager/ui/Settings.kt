@@ -53,7 +53,7 @@ fun SettingsScreen(
             listOf(
                 "system" to "System default",
                 "dark" to "Dark",
-                "black" to "True black (Material-style)",
+                "black" to "True black",
                 "light" to "Light",
             ).forEach { (key, label) ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -95,7 +95,10 @@ fun SettingsScreen(
             Text("About", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Text(
-                "FMX Manager 1.2 — all-in-one file manager.\n" +
+                "FMX Manager 1.3 — all-in-one file manager.\n" +
+                    "Material 3 UI themed with Astryx design tokens, " +
+                    "a MiXplorer-style storage drawer, ZArchiver-style " +
+                    "file rows and Material Files-style breadcrumbs.\n" +
                     "File workflows inspired by ZArchiver (archives), " +
                     "MT Manager (APK tools, dual pane), MiXplorer " +
                     "(tabs, trash, servers, tools) and Material Files " +
